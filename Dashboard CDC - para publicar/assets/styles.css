@@ -1,0 +1,219 @@
+@import url("fonts.css");
+
+:root{
+--green-500:#6DBE45;--green-tint:rgba(109,190,69,.14);--green-line:rgba(109,190,69,.35);
+--s1:#6DBE45;--s2:#4A9FD8;--s3:#E8A200;--s4:#9B7FE8;--s5:#2BD1E8;--s6:#E5748C;--s7:#F2704A;--s8:#57D9A3;
+--bg:#0E1C33;--surface:#132743;--well:#0A1526;--line:rgba(255,255,255,.08);
+--t-hi:#FFFFFF;--t-mid:#C6D2E0;--t-low:#9FB0C4;--t-muted:#8698AD;--t-faint:#6E7F93;
+--ok:#6DBE45;--warn:#E8A200;--crit:#E5484D;--info:#7C93AE;--accent:#6DBE45;--hover:#1B3355;
+--grid:rgba(255,255,255,.09);
+}
+[data-theme="light"]{
+--bg:#F3F6FA;--surface:#FFFFFF;--well:#F8FAFC;--line:#E2E8F0;
+--s1:#4E9E2E;--s2:#2C7CB8;--s3:#B57C00;--s4:#6F4FC4;--s5:#0F94A8;--s6:#C24A64;--s7:#C2512A;--s8:#1C9E72;
+--t-hi:#0E1C33;--t-mid:#3C4A5C;--t-low:#5B6B7D;--t-muted:#6B7A8D;--t-faint:#9AA8B8;
+--ok:#1E5B2C;--warn:#9A6B00;--crit:#B3282C;--info:#5B6B7D;--accent:#1E5B2C;--hover:#F8FAFC;
+--grid:#E4EAF1;
+}
+
+html,body{margin:0;padding:0;background:var(--bg);}
+*{box-sizing:border-box;}
+a{color:var(--accent);text-decoration:none;}
+a:hover{color:var(--accent);text-decoration:underline;}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important;}}
+
+/* ── Layout base (equivalente al wrapper del bundle original) ────────── */
+.page{min-height:100vh;background:var(--bg);font-family:'IBM Plex Sans',system-ui,sans-serif;
+  padding:40px 40px 64px;transition:background 160ms ease-out;}
+.shell{max-width:1520px;margin:0 auto;display:flex;flex-direction:column;gap:40px;}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace;}
+.grot{font-family:'Space Grotesk',system-ui,sans-serif;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:32px;
+  display:flex;flex-direction:column;gap:24px;}
+/* display:flex gana al [hidden] del navegador; hay que decirlo aparte. */
+.card[hidden]{display:none;}
+.well{background:var(--well);border-radius:12px;padding:28px;}
+.eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--t-muted);}
+h2.sec{margin:0;font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:27px;
+  line-height:1.1;letter-spacing:-.02em;color:var(--t-hi);}
+h3.sub{margin:0;font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600;font-size:19px;
+  letter-spacing:-.015em;color:var(--t-hi);}
+.sec-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;}
+section{display:flex;flex-direction:column;gap:20px;}
+
+.ghost-btn{height:44px;padding:0 22px;border-radius:12px;background:transparent;
+  border:1.5px solid var(--green-line);color:var(--t-hi);font-family:'Space Grotesk',system-ui,sans-serif;
+  font-weight:600;font-size:15px;white-space:nowrap;cursor:pointer;
+  transition:background 140ms ease-out,border-color 140ms ease-out;}
+.ghost-btn:hover{background:var(--green-tint);border-color:var(--accent);}
+
+/* ── Cabecera global y pestañas ──────────────────────────────────────── */
+.masthead{display:flex;flex-direction:column;gap:18px;}
+
+/* Franja de logos, sin tarjeta: se apoya en el fondo de la página. */
+.logos{display:inline-flex;align-items:center;gap:22px;align-self:flex-start;
+  background:transparent;padding:0;}
+/* Si ningún logo llegó a cargar, la franja se esconde entera para no dejar
+   un hueco. :empty no sirve — los huecos existen, sólo están ocultos. */
+.logos:not(:has(.logo-slot:not([hidden]))){display:none;}
+.logo-slot{display:inline-flex;align-items:center;}
+.logo-slot[hidden]{display:none;}
+/* Altura base 44 px; cada logo la escala a lo suyo porque vienen con
+   proporciones y márgenes internos distintos. El ancho va en auto para no
+   deformarlos. */
+.logo-slot img{display:block;height:44px;width:auto;object-fit:contain;}
+.logo-slot[data-logo="sohersa"] img{height:110px;}          /* 2.5× */
+/* Los dos escudos de gobierno son lockups apaisados: a igual altura pesarían
+   mucho más que el de Sohersa, que es compacto. Se les baja la altura para
+   que los tres ocupen una franja visual parecida. */
+.logo-slot[data-logo="gobierno-gdl"] img{height:78px;}
+.logo-slot[data-logo="obras-publicas"] img{height:50px;}
+
+/* El separador no debe crecer con el logo más alto: se queda a media altura. */
+.logo-sep{width:1px;height:52px;align-self:center;background:var(--line);}
+/* Si sólo sobrevive un logo, el separador estorba. Hay que mirar hacia los
+   dos lados: CSS no tiene «hermano anterior», de ahí el :has(). */
+.logo-slot[hidden] + .logo-sep,
+.logo-sep:has(+ .logo-slot[hidden]),
+.logo-sep:first-child,
+.logo-sep:last-child{display:none;}
+
+@media (max-width:720px){
+  /* Con tres logos la franja ya no cabe siempre en una línea. Se permite que
+     salte de renglón antes que provocar scroll horizontal en toda la página. */
+  .logos{gap:14px;flex-wrap:wrap;row-gap:10px;}
+  .logo-slot img{height:34px;}
+  .logo-slot[data-logo="sohersa"] img{height:74px;}
+  .logo-slot[data-logo="gobierno-gdl"] img{height:54px;}
+  .logo-slot[data-logo="obras-publicas"] img{height:35px;}
+  .logo-sep{height:38px;}
+}
+/* Móvil estrecho: los tres caben en un renglón sólo si se encogen otro paso. */
+@media (max-width:440px){
+  .logos{gap:10px;}
+  .logo-slot[data-logo="sohersa"] img{height:56px;}
+  .logo-slot[data-logo="gobierno-gdl"] img{height:40px;}
+  .logo-slot[data-logo="obras-publicas"] img{height:26px;}
+  .logo-sep{height:28px;}
+}
+/* El nombre del proyecto manda sobre el título de cada pestaña, pero sin
+   competir con él: pesa por tamaño, no por caja alta ni interletrado ancho. */
+.masthead-project{font-weight:700;font-size:26px;line-height:1.1;letter-spacing:-.015em;
+  color:var(--accent);}
+@media (max-width:720px){ .masthead-project{font-size:21px;} }
+.masthead-row{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;padding:6px;}
+.tab{appearance:none;border:0;background:transparent;cursor:pointer;white-space:nowrap;
+  font-family:'Space Grotesk',system-ui,sans-serif;font-weight:600;font-size:15px;
+  color:var(--t-muted);padding:11px 20px;border-radius:10px;
+  transition:background 140ms ease-out,color 140ms ease-out;}
+.tab:hover{color:var(--t-hi);background:var(--hover);}
+.tab.is-active{background:var(--green-tint);color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--green-line);}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+/* Los paneles heredan el ritmo vertical de .shell. */
+.tab-panel{display:flex;flex-direction:column;gap:40px;}
+.tab-panel[hidden]{display:none;}
+
+.panel-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;}
+.panel-title{margin:0;font-weight:700;font-size:38px;line-height:1.05;letter-spacing:-.025em;
+  text-transform:uppercase;color:var(--t-hi);}
+
+/* Aviso de datos ficticios. Esta pestaña se va a enseñar en reuniones:
+   tiene que ser imposible confundirla con información real. */
+.demo-badge{display:inline-flex;align-items:center;gap:9px;flex:none;
+  padding:9px 16px;border-radius:10px;
+  background:color-mix(in srgb, var(--warn) 14%, transparent);
+  border:1px solid color-mix(in srgb, var(--warn) 45%, transparent);
+  color:var(--warn);font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;}
+
+/* ── Marcador de sección pendiente ───────────────────────────────────── */
+.placeholder{align-items:center;text-align:center;gap:18px;padding:72px 32px;
+  border-style:dashed;border-color:var(--green-line);}
+.placeholder-icon{width:60px;height:60px;border-radius:16px;background:var(--green-tint);
+  border:1px solid var(--green-line);display:flex;align-items:center;justify-content:center;}
+.placeholder-text{margin:0;max-width:56ch;font-family:'IBM Plex Sans',system-ui,sans-serif;
+  font-size:15px;line-height:1.6;color:var(--t-muted);}
+
+/* ── Visor APS ───────────────────────────────────────────────────────── */
+.viewer-card{background:var(--surface);border:1.5px solid var(--green-line);border-radius:20px;
+  overflow:hidden;display:flex;flex-direction:column;}
+.viewer-head{display:flex;justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;
+  padding:24px 32px;border-bottom:1px solid var(--line);}
+.viewer-badge{width:56px;height:56px;border-radius:14px;background:var(--green-tint);
+  border:1px solid var(--green-line);display:flex;align-items:center;justify-content:center;flex:none;}
+.viewer-title{font-family:'Space Grotesk',system-ui,sans-serif;font-weight:700;font-size:24px;
+  letter-spacing:-.02em;color:var(--t-hi);}
+
+/* El contenedor del visor vive FUERA del árbol que se re-renderiza:
+   el SDK de Autodesk inyecta su propio DOM aquí y no debe ser destruido. */
+.viewer-host{position:relative;width:100%;height:clamp(420px,62vh,760px);background:var(--well);}
+.viewer-host:fullscreen{height:100vh;}
+/* El federado no comparte espacio con un dashboard: puede respirar más. */
+.viewer-card--tall .viewer-host{height:clamp(480px,74vh,900px);}
+
+.viewer-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:14px;text-align:center;padding:32px;z-index:2;background:var(--well);}
+.viewer-state[hidden]{display:none;}
+.viewer-state .msg{font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:15px;color:var(--t-mid);
+  max-width:52ch;line-height:1.5;}
+.viewer-state .detail{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;
+  letter-spacing:.08em;color:var(--t-faint);max-width:70ch;word-break:break-word;}
+
+.spinner{width:34px;height:34px;border-radius:50%;border:3px solid var(--grid);
+  border-top-color:var(--accent);animation:spin 900ms linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.viewer-link-bar{display:flex;justify-content:space-between;align-items:center;gap:20px;
+  flex-wrap:wrap;padding:14px 32px;border-bottom:1px solid var(--line);background:var(--well);}
+.viewer-link-bar .ghost-btn{height:36px;padding:0 16px;font-size:13px;border-radius:10px;}
+/* Sin color explícito estos textos heredan el negro por defecto del
+   navegador y desaparecen sobre el fondo oscuro. */
+.viewer-meta{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--t-faint);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+#viewer-link-status,
+#fed-status{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--t-faint);}
+
+.ejes-select{appearance:none;cursor:pointer;background:transparent;color:var(--t-hi);
+  border:1.5px solid var(--green-line);border-radius:10px;height:36px;padding:0 12px;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;max-width:230px;}
+.ejes-select option{background:var(--surface);color:var(--t-hi);}
+
+#ejes-status{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--t-faint);}
+#ejes-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--t-muted);max-width:60ch;}
+#ejes-legend:empty{display:none;}
+
+#viewer-link-legend,
+#fed-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--t-muted);}
+#viewer-link-legend:empty,
+#fed-legend:empty{display:none;}
+
+/* ── Interruptores de modelo del visor federado ──────────────────────── */
+.model-toggles{display:flex;gap:8px;flex-wrap:wrap;}
+.model-toggle{appearance:none;cursor:pointer;white-space:nowrap;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;padding:8px 14px;border-radius:10px;
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green-tint);border:1px solid var(--green-line);color:var(--t-hi);
+  transition:background 140ms ease-out,border-color 140ms ease-out,color 140ms ease-out,opacity 140ms ease-out;}
+.model-toggle .punto{width:9px;height:9px;border-radius:3px;display:block;background:var(--accent);}
+.model-toggle[aria-pressed="false"]{background:transparent;border-color:var(--line);
+  color:var(--t-faint);opacity:.7;}
+.model-toggle[aria-pressed="false"] .punto{background:transparent;box-shadow:inset 0 0 0 1px var(--t-faint);}
+.model-toggle:hover{border-color:var(--accent);}
+
+/* El GUI del visor trae su propio tema oscuro; suavizamos el borde de contacto. */
+.viewer-host .adsk-viewing-viewer{background:var(--well);}
+
+@media (max-width:720px){
+  .page{padding:24px 18px 48px;}
+  .viewer-head{padding:20px;}
+}
