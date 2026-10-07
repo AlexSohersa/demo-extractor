@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avance general · Proyecto CDC</title>
+<link rel="stylesheet" href="assets/styles.css">
+<link rel="stylesheet" href="assets/extraccion.css">
+
+<!-- SDK del Autodesk Platform Services Viewer (v7). Se carga antes que viewer.js. -->
+<link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css">
+<script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
+</head>
+
+<body>
+<div class="page">
+  <div class="shell">
+
+    <!-- ═══ Cabecera global y pestañas ═══════════════════════════════════ -->
+    <header class="masthead">
+      <!-- Los logos van sobre una tarjeta clara a propósito: traen texto
+           oscuro y sobre el fondo del tema oscuro serían ilegibles.
+           Si un archivo no existe, su hueco se oculta en vez de dejar el
+           icono de imagen rota. -->
+      <div class="logos" id="logos">
+        <span class="logo-slot" data-logo="sohersa">
+          <img src="assets/img/sohersa.png" alt="Sohersa"
+               onerror="this.parentNode.hidden=true">
+        </span>
+      </div>
+      <div class="masthead-row">
+        <nav class="tabs" role="tablist" aria-label="Secciones del proyecto">
+          <!-- Modelo federado y Avance estructural quedan fuera de servicio a
+               petición del cliente. Sus paneles siguen íntegros más abajo y sus
+               módulos (app.js, viewer-link.js, viewer-fechas.js, viewer-status.js)
+               se siguen cargando; sólo se les quitó la puerta de entrada.
+
+               tabs.js arma la lista de pestañas con los botones que encuentra y,
+               si el hash pide una clave que no existe, cae en la primera. Para
+               devolverlas basta con descomentar estas dos líneas.
+
+          <button class="tab" type="button" role="tab" data-tab-btn="federado" aria-selected="false">Modelo federado</button>
+          <button class="tab" type="button" role="tab" data-tab-btn="avance"   aria-selected="false">Avance estructural</button>
+          -->
+          <button class="tab" type="button" role="tab" data-tab-btn="extraccion" aria-selected="true">Extracción</button>
+          <button class="tab" type="button" role="tab" data-tab-btn="general"  aria-selected="false">Avance general</button>
+        </nav>
+        <button id="theme-toggle" class="ghost-btn" type="button">Modo claro</button>
+      </div>
+    </header>
+
+
+    <!-- ═══ 0 · Extracción ════════════════════════════════════════════════
+         El viaje de los datos: Forma avisa por webhook que hay una versión
+         nueva, el servidor la extrae de Autodesk y la página lo va
+         mostrando. Todo lo pinta assets/extraccion.js. -->
+    <section class="tab-panel" data-tab-panel="extraccion" role="tabpanel" aria-label="Extracción" hidden>
+
+      <div class="panel-head">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h1 class="grot panel-title">Extracción.</h1>
+        </div>
+        <div class="ex-escucha" id="ex-escucha">
+          <span class="ex-led"></span>
+          <span class="mono" id="ex-escucha-txt">Conectando con Autodesk Forma…</span>
+        </div>
+      </div>
+
+      <!-- Flujo: cinco estaciones y los tramos entre ellas -->
+      <div class="card ex-flujo-card">
+        <ol class="ex-flujo" id="ex-flujo">
+          <li class="ex-nodo" data-nodo="revit">
+            <div class="ex-icono"><svg viewBox="0 0 24 24"><path d="M4 20V4h9a5 5 0 0 1 0 10H4m8 0 6 6"/></svg></div>
+            <div class="ex-nombre">Revit</div>
+            <div class="ex-dato mono" data-dato></div>
+          </li>
+          <li class="ex-tramo" data-tramo="1"><span></span></li>
+          <li class="ex-nodo" data-nodo="forma">
+            <div class="ex-icono"><svg viewBox="0 0 24 24"><path d="M3 15a4 4 0 0 0 4 4h10a4 4 0 0 0 .8-7.9A6 6 0 0 0 6.2 9.5 4 4 0 0 0 3 15z"/></svg></div>
+            <div class="ex-nombre">Autodesk Forma</div>
+            <div class="ex-dato mono" data-dato></div>
+          </li>
+          <li class="ex-tramo" data-tramo="2"><span></span></li>
+          <li class="ex-nodo" data-nodo="aps">
+            <div class="ex-icono"><svg viewBox="0 0 24 24"><path d="M12 2.5 21 7.2v9.6L12 21.5 3 16.8V7.2z"/><path d="M3 7.2l9 4.7 9-4.7M12 11.9v9.6"/></svg></div>
+            <div class="ex-nombre">Autodesk APS</div>
+            <div class="ex-dato mono" data-dato></div>
+          </li>
+          <li class="ex-tramo" data-tramo="3"><span></span></li>
+          <li class="ex-nodo" data-nodo="nube">
+            <div class="ex-icono"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg></div>
+            <div class="ex-nombre">Sohersa Cloud</div>
+            <div class="ex-dato mono" data-dato></div>
+          </li>
+          <li class="ex-tramo" data-tramo="4"><span></span></li>
+          <li class="ex-nodo" data-nodo="dash">
+            <div class="ex-icono"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div>
+            <div class="ex-nombre">Dashboard</div>
+            <div class="ex-dato mono" data-dato></div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Contadores -->
+      <div class="ex-kpis" id="ex-kpis">
+        <div class="ex-kpi"><span class="eyebrow">Modelos</span><b class="grot" data-kpi="modelos">0<small>/10</small></b></div>
+        <div class="ex-kpi"><span class="eyebrow">Elementos</span><b class="grot" data-kpi="elementos">0</b></div>
+        <div class="ex-kpi"><span class="eyebrow">Valores extraídos</span><b class="grot" data-kpi="valores">0</b></div>
+        <div class="ex-kpi"><span class="eyebrow">Con fechas de obra</span><b class="grot" data-kpi="fechas">0</b></div>
+        <div class="ex-kpi"><span class="eyebrow">Leído de Autodesk → útil</span><b class="grot" data-kpi="bytes">0 MB</b></div>
+      </div>
+
+      <div class="ex-cols">
+        <!-- Los diez modelos -->
+        <div class="card ex-modelos-card">
+          <div class="sec-head"><h3 class="sub">Modelos del proyecto</h3></div>
+          <div class="ex-modelos" id="ex-modelos"></div>
+        </div>
+
+        <!-- Bitácora en vivo -->
+        <div class="card ex-log-card">
+          <div class="sec-head"><h3 class="sub">Bitácora del servidor</h3></div>
+          <div class="ex-log mono" id="ex-log" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <!-- Muestra de lo que llega -->
+      <div class="card">
+        <div class="sec-head" style="justify-content:space-between">
+          <h3 class="sub">Datos llegando a Sohersa Cloud</h3>
+          
+        </div>
+        <div class="ex-tabla-wrap">
+          <table class="ex-tabla">
+            <thead><tr>
+              <th>Modelo</th><th>Categoría</th><th>Tipo</th><th>Marca</th>
+              <th>Planeación</th><th>Ejecución</th><th class="num">Cantidad</th>
+            </tr></thead>
+            <tbody id="ex-tabla"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Cierre: aparece al terminar -->
+      <div class="card ex-fin" id="ex-fin" hidden>
+        <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+          <span class="eyebrow">Extracción completa</span>
+          <h2 class="sec" id="ex-fin-txt"></h2>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <button class="ghost-btn" type="button" id="ex-json">Descargar JSON</button>
+          <button class="ghost-btn ex-cta" type="button" id="ex-analizar">¡Ahora sí, analicemos! →</button>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ═══ 1 · Visor de modelo federado ═════════════════════════════════ -->
+    <section class="tab-panel" data-tab-panel="federado" role="tabpanel" aria-label="Modelo federado" hidden>
+
+      <div class="panel-head">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h1 class="grot panel-title">Modelo federado.</h1>
+        </div>
+      </div>
+
+      <!-- Interruptores de visibilidad, uno por modelo. Fuera del visor
+           para que se puedan usar sin entrar en su interfaz. -->
+      <div class="card" style="gap:14px;padding:22px 28px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+          <span class="eyebrow">Modelos en pantalla</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="fed-todos"  class="ghost-btn" type="button" style="height:32px;padding:0 14px;font-size:12px;border-radius:9px">Mostrar todos</button>
+            <button id="fed-ninguno" class="ghost-btn" type="button" style="height:32px;padding:0 14px;font-size:12px;border-radius:9px">Ocultar todos</button>
+          </div>
+        </div>
+        <div id="fed-models" class="model-toggles"></div>
+      </div>
+
+      <!-- Segundo visor. data-source="federado" carga la lista de modelos
+           GEORREFERENCIADO de ACC Docs (aps-federado). Cuando la cuenta de
+           servicio esté lista, basta cambiarlo a "coordination" para leer la
+           vista directamente de Model Coordination. -->
+      <div class="viewer-card viewer-card--tall" data-viewer="federado" data-model="federado" data-source="federado">
+        <div class="viewer-head">
+          <div style="display:flex;align-items:center;gap:20px;min-width:0">
+            <div class="viewer-badge">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 21 7.2v9.6L12 21.5 3 16.8V7.2z"></path><path d="M3 7.2l9 4.7 9-4.7"></path><path d="M12 11.9v9.6"></path><path d="M7.5 4.9 16.5 9.6"></path></svg>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+              <div class="viewer-title">Modelo federado</div>
+              <div class="viewer-meta mono">Cargando modelo…</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="viewer-home ghost-btn" type="button" title="Restablecer la vista">Vista inicial</button>
+            <button class="viewer-fs ghost-btn" type="button" title="Pantalla completa">Pantalla completa</button>
+          </div>
+        </div>
+
+        <div class="viewer-link-bar">
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+            <span id="fed-status" class="mono"></span>
+            <div id="fed-legend" class="mono"></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="fed-avance"     class="ghost-btn" type="button" title="Verde: ejecutado · Rojo: pendiente · Transparente: sin capturar">Colorear por avance</button>
+            <button id="fed-ejecutados" class="ghost-btn" type="button" title="Sólo lo ejecutado">Aislar ejecutados</button>
+            <button id="fed-reset"      class="ghost-btn" type="button">Restablecer</button>
+          </div>
+        </div>
+
+        <div class="viewer-host">
+          <div class="viewer-loading viewer-state">
+            <div class="spinner"></div>
+            <div class="msg">Cargando el modelo desde Autodesk Construction Cloud…</div>
+          </div>
+          <div class="viewer-error viewer-state" hidden>
+            <div class="msg viewer-error-msg">No se pudo cargar el modelo.</div>
+            <div class="detail viewer-error-detail"></div>
+            <a class="viewer-fallback ghost-btn" href="https://autode.sk/4hAP9v3" target="_blank" rel="noopener"
+               style="display:inline-flex;align-items:center;padding:0 22px;line-height:44px;text-decoration:none" hidden>Abrir en Autodesk Viewer</a>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ═══ 2 · Avance estructural ═══════════════════════════════════════ -->
+    <section class="tab-panel" data-tab-panel="avance" role="tabpanel" aria-label="Avance estructural" hidden>
+
+      <div class="panel-head">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h1 class="grot panel-title">Avance estructural.</h1>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);display:block"></span>
+          <span id="data-source" class="mono" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t-muted)">Leyendo el modelo…</span>
+        </div>
+      </div>
+
+      <!-- Visor del modelo estructural. Fuera de #dashboard-root: el SDK
+           inyecta su propio DOM y no debe caer en la zona que se repinta. -->
+      <section>
+        <div class="viewer-card" data-viewer="estructural" data-model="">
+          <div class="viewer-head">
+            <div style="display:flex;align-items:center;gap:20px;min-width:0">
+              <div class="viewer-badge">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 21 7.2v9.6L12 21.5 3 16.8V7.2z"></path><path d="M3 7.2l9 4.7 9-4.7"></path><path d="M12 11.9v9.6"></path></svg>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+                <div class="viewer-title">Visor 3D del modelo</div>
+                <div class="viewer-meta mono">Cargando modelo…</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button class="viewer-home ghost-btn" type="button" title="Restablecer la vista">Vista inicial</button>
+              <button class="viewer-fs ghost-btn" type="button" title="Pantalla completa">Pantalla completa</button>
+            </div>
+          </div>
+
+          <!-- Controles del puente dashboard ↔ visor -->
+          <div class="viewer-link-bar">
+            <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+              <span id="viewer-link-status" class="mono"></span>
+              <div id="viewer-link-legend" class="mono"></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <button id="viewer-link-sync"        class="ghost-btn" type="button" title="Aísla en el visor la partida seleccionada">Vinculado al dashboard</button>
+              <button id="viewer-link-status-mode" class="ghost-btn" type="button" title="Verde: ejecutado · Rojo: pendiente · Transparente: sin capturar">Colorear por avance</button>
+              <button id="viewer-link-paint"       class="ghost-btn" type="button" title="Un color por partida">Colorear por partida</button>
+              <button id="viewer-link-ejecutados"  class="ghost-btn" type="button" title="Sólo lo ejecutado">Aislar ejecutados</button>
+              <button id="viewer-link-reset"       class="ghost-btn" type="button">Restablecer</button>
+            </div>
+          </div>
+
+          <div class="viewer-host">
+            <div class="viewer-loading viewer-state">
+              <div class="spinner"></div>
+              <div class="msg">Cargando el modelo desde Autodesk Construction Cloud…</div>
+            </div>
+            <div class="viewer-error viewer-state" hidden>
+              <div class="msg viewer-error-msg">No se pudo cargar el modelo.</div>
+              <div class="detail viewer-error-detail"></div>
+              <a class="viewer-fallback ghost-btn" href="https://autode.sk/4hAP9v3" target="_blank" rel="noopener"
+                 style="display:inline-flex;align-items:center;padding:0 22px;line-height:44px;text-decoration:none">Abrir en Autodesk Viewer</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Secciones dinámicas: las repinta assets/app.js -->
+      <div id="dashboard-root" style="display:contents"></div>
+
+    </section>
+
+
+    <!-- ═══ 3 · Avance general ═══════════════════════════════════════════
+         Las diez disciplinas juntas. Usa su propia instancia del visor
+         federado: viewer.js indexa por panel, no por modelo, así que este
+         [data-viewer="general"] se monta solo al mostrar la pestaña. -->
+    <section class="tab-panel" data-tab-panel="general" role="tabpanel" aria-label="Avance general">
+
+      <div class="panel-head">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h1 class="grot panel-title">Avance general.</h1>
+          <div class="mono" style="font-size:11px;letter-spacing:.1em;color:var(--t-faint);text-transform:uppercase">Ponderado por costo estimado</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok);display:block"></span>
+          <span id="general-source" class="mono" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t-muted)">Leyendo los modelos…</span>
+        </div>
+      </div>
+
+      <div class="viewer-card viewer-card--tall" data-viewer="general" data-model="federado" data-source="federado">
+        <div class="viewer-head">
+          <div style="display:flex;align-items:center;gap:20px;min-width:0">
+            <div class="viewer-badge">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 21 7.2v9.6L12 21.5 3 16.8V7.2z"></path><path d="M3 7.2l9 4.7 9-4.7"></path><path d="M12 11.9v9.6"></path><path d="M7.5 4.9 16.5 9.6"></path></svg>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+              <div class="viewer-title">Modelo federado</div>
+              <div class="viewer-meta mono">Cargando modelo…</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="viewer-home ghost-btn" type="button" title="Restablecer la vista">Vista inicial</button>
+            <button class="viewer-fs ghost-btn" type="button" title="Pantalla completa">Pantalla completa</button>
+          </div>
+        </div>
+
+        <div class="viewer-link-bar">
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:0">
+            <span id="general-status" class="mono"></span>
+            <div id="general-legend" class="mono"></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="general-avance"     class="ghost-btn" type="button" title="Verde: ejecutado · Rojo: pendiente">Colorear por avance</button>
+            <button id="general-disciplina" class="ghost-btn" type="button" title="Un color por disciplina">Colorear por disciplina</button>
+            <button id="general-ejecutados" class="ghost-btn" type="button" title="Sólo lo ejecutado">Aislar ejecutados</button>
+            <button id="general-reset"      class="ghost-btn" type="button">Restablecer</button>
+          </div>
+        </div>
+
+        <div class="viewer-host">
+          <div class="viewer-loading viewer-state">
+            <div class="spinner"></div>
+            <div class="msg">Cargando los modelos desde Autodesk Construction Cloud…</div>
+          </div>
+          <div class="viewer-error viewer-state" hidden>
+            <div class="msg viewer-error-msg">No se pudo cargar el modelo.</div>
+            <div class="detail viewer-error-detail"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interruptores de visibilidad, uno por disciplina. Nacen ocultos
+           porque hasta que el visor no entrega los modelos no hay nada que
+           encender; general.js los llena y descubre la tarjeta. -->
+      <div class="card" id="general-models-card" style="gap:14px;padding:22px 28px" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+          <span class="eyebrow">Modelos en pantalla</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button id="general-todos"   class="ghost-btn" type="button" style="height:32px;padding:0 14px;font-size:12px;border-radius:9px">Mostrar todos</button>
+            <button id="general-ninguno" class="ghost-btn" type="button" style="height:32px;padding:0 14px;font-size:12px;border-radius:9px">Ocultar todos</button>
+          </div>
+        </div>
+        <div id="general-models" class="model-toggles"></div>
+      </div>
+
+      <!-- Lo repinta assets/general.js conforme termina cada disciplina -->
+      <div id="general-root" style="display:contents"></div>
+
+    </section>
+
+    <footer style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--t-faint)">
+      <span>Sohersa BIM · Dashboard de obra</span>
+      <span></span>
+    </footer>
+
+  </div>
+
+  <div id="tip" style="position:fixed;pointer-events:none;z-index:50;background:var(--well);border:1px solid var(--line);border-radius:10px;padding:12px 16px;box-shadow:0 16px 38px rgba(14,28,51,.28);transition:opacity 120ms ease-out;opacity:0;left:-9999px;top:-9999px">
+    <div id="tip-label" class="mono" style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--t-muted);margin-bottom:6px"></div>
+    <div id="tip-value" class="grot" style="font-weight:700;font-size:18px;font-variant-numeric:tabular-nums;color:var(--t-hi)"></div>
+  </div>
+</div>
+
+<script src="assets/costos.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/general.js"></script>
+<script src="assets/viewer.js"></script>
+<script src="assets/viewer-opacidad.js"></script>
+<script src="assets/viewer-link.js"></script>
+<script src="assets/viewer-fechas.js"></script>
+<script src="assets/viewer-status.js"></script>
+<script src="assets/extraccion.js"></script>
+<script src="assets/tabs.js"></script>
+</body>
+</html>
